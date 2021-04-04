@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1023750..fac661a 100644
+index 1023750..390195b 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -62,6 +62,13 @@ if(BUILD_WIN)
@@ -16,6 +16,15 @@ index 1023750..fac661a 100644
  # -----------------------------------------------------------------------------
  # |                             INCLUDE DIRECTORIES                           |
  # -----------------------------------------------------------------------------
+@@ -141,7 +148,7 @@ if(BUILD_HOST)
+ 	set(BUILD_SHARED_LIB        TRUE)
+ 	set(BUILD_HOST_EXAMPLES     TRUE)
+ 	set(ALLOW_INSTALL_TARGET    TRUE)
+-	set(BUILD_HOST_SELFTEST    FALSE)
++	# set(BUILD_HOST_SELFTEST    FALSE)
+ 	set(ZTS_ENABLE_STATS        TRUE)
+ 	set(ZTS_ENABLE_CENTRAL_API FALSE)
+ endif()
 @@ -402,7 +409,7 @@ if(ZTS_ENABLE_CENTRAL_API)
  	find_package(CURL)
  	if(CURL_FOUND)
@@ -51,7 +60,7 @@ index 1023750..fac661a 100644
 +		target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES} ${CONAN_LIBS})
  	endif()
  endif() # BUILD_SHARED_LIB
- 
+
 diff --git a/examples/cpp/client.cpp b/examples/cpp/client.cpp
 index c05483b..d81c056 100644
 --- a/examples/cpp/client.cpp
@@ -142,6 +151,31 @@ index 5f9ab22..6fe7f57 100644
  #include "ZeroTierSockets.h"
  
  struct Node
+diff --git a/include/ZeroTierSockets.h b/include/ZeroTierSockets.h
+index 68247e2..46d8521 100644
+--- a/include/ZeroTierSockets.h
++++ b/include/ZeroTierSockets.h
+@@ -882,11 +882,15 @@ int zts_py_getblocking(int fd);
+ //////////////////////////////////////////////////////////////////////////////
+ 
+ #if defined(_WIN32)
+-	#ifdef ADD_EXPORTS
+-		#define ZTS_API __declspec(dllexport)
+-	#else
+-		#define ZTS_API __declspec(dllimport)
+-	#endif
++    #ifndef ZTS_STATIC
++        #ifdef ADD_EXPORTS
++            #define ZTS_API __declspec(dllexport)
++        #else
++            #define ZTS_API __declspec(dllimport)
++        #endif
++    #else
++        #define ZTS_API
++    #endif
+ 	#define ZTCALL __cdecl
+ #else
+ 	#define ZTS_API
 diff --git a/src/Events.cpp b/src/Events.cpp
 index 049f9ee..d134882 100644
 --- a/src/Events.cpp

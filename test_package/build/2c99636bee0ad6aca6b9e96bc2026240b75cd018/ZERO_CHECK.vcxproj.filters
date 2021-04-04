@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="U:\SYNCHRONIZED\DEV\libzt-conan\test_package\build\2c99636bee0ad6aca6b9e96bc2026240b75cd018\CMakeFiles\142e9d616e53a814d8c5eb95574a16e6\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{E5E490B2-2EE0-309D-B4AE-C28F372C91E9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
