@@ -1,0 +1,156 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1023750..fac661a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -62,6 +62,13 @@ if(BUILD_WIN)
+ 	set(LWIP_PORT_DIR ${PROJ_DIR}/ext/lwip-contrib/ports/win32)
+ endif()
+ 
++# -----------------------------------------------------------------------------
++# |                             CONAN INTEGRATION                             |
++# -----------------------------------------------------------------------------
++
++include(../conanbuildinfo.cmake)
++conan_basic_setup()
++
+ # -----------------------------------------------------------------------------
+ # |                             INCLUDE DIRECTORIES                           |
+ # -----------------------------------------------------------------------------
+@@ -402,7 +409,7 @@ if(ZTS_ENABLE_CENTRAL_API)
+ 	find_package(CURL)
+ 	if(CURL_FOUND)
+ 		include_directories(${CURL_INCLUDE_DIR})
+-		set(requiredlibs ${requiredlibs} ${CURL_LIBRARIES})
++		set(requiredlibs ${requiredlibs} ${CURL_LIBRARIES} ${CONAN_LIBS})
+ 	else(CURL_FOUND)
+ 		message(
+ 			FATAL_ERROR "Could not find the CURL library and development files.")
+@@ -626,7 +633,7 @@ if(BUILD_STATIC_LIB)
+ 			${shlwapi_LIBRARY_PATH} ${iphlpapi_LIBRARY_PATH})
+ 	endif()
+ 	if(ZTS_ENABLE_CENTRAL_API)
+-		target_link_libraries(${STATIC_LIB_NAME} ${CURL_LIBRARIES})
++		target_link_libraries(${STATIC_LIB_NAME} ${CURL_LIBRARIES} ${CONAN_LIBS})
+ 	endif()
+ endif() # BUILD_STATIC_LIB
+ 
+@@ -663,7 +670,7 @@ if(BUILD_SHARED_LIB)
+ 		miniupnpc_pic)
+ 
+ 	if(ZTS_ENABLE_CENTRAL_API)
+-		target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES})
++		target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES} ${CONAN_LIBS})
+ 	endif()
+ 
+ 	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+@@ -672,7 +679,7 @@ if(BUILD_SHARED_LIB)
+ 		target_link_libraries(${DYNAMIC_LIB_NAME} android log)
+ 	endif()
+ 	if(ZTS_ENABLE_CENTRAL_API)
+-		target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES})
++		target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES} ${CONAN_LIBS})
+ 	endif()
+ endif() # BUILD_SHARED_LIB
+ 
+diff --git a/examples/cpp/client.cpp b/examples/cpp/client.cpp
+index c05483b..d81c056 100644
+--- a/examples/cpp/client.cpp
++++ b/examples/cpp/client.cpp
+@@ -7,6 +7,12 @@
+ #include <string.h>
+ #include <string>
+ 
++#if defined(_WIN32)
++	#include <winsock.h>
++#else
++	#include <netinet/in.h>
++#endif
++
+ #include "ZeroTierSockets.h"
+ 
+ struct Node
+diff --git a/examples/cpp/comprehensive.cpp b/examples/cpp/comprehensive.cpp
+index 385b101..ae5cf0c 100644
+--- a/examples/cpp/comprehensive.cpp
++++ b/examples/cpp/comprehensive.cpp
+@@ -90,11 +90,14 @@
+ #include <stdlib.h>
+ #include <string>
+ 
++#if defined(_WIN32)
++	#include <winsock.h>
++#else
++	#include <netinet/in.h>
++#endif
++
+ #include "ZeroTierSockets.h"
+ 
+-#ifdef __WINDOWS__
+-#include "winsock.h"
+-#endif
+ struct Node
+ {
+ 	Node() : online(false), joinedAtLeastOneNetwork(false), id(0) {}
+diff --git a/examples/cpp/nonblockingclient.cpp b/examples/cpp/nonblockingclient.cpp
+index a5635da..f173f20 100644
+--- a/examples/cpp/nonblockingclient.cpp
++++ b/examples/cpp/nonblockingclient.cpp
+@@ -89,6 +89,12 @@
+ #include <string.h>
+ #include <string>
+ 
++#if defined(_WIN32)
++	#include <winsock.h>
++#else
++	#include <netinet/in.h>
++#endif
++
+ #include "ZeroTierSockets.h"
+ 
+ struct Node
+diff --git a/examples/cpp/nonblockingserver.cpp b/examples/cpp/nonblockingserver.cpp
+index e012922..f81f906 100644
+--- a/examples/cpp/nonblockingserver.cpp
++++ b/examples/cpp/nonblockingserver.cpp
+@@ -88,6 +88,12 @@
+ #include <stdlib.h>
+ #include <string.h>
+ 
++#if defined(_WIN32)
++	#include <winsock.h>
++#else
++	#include <netinet/in.h>
++#endif
++
+ #include "ZeroTierSockets.h"
+ 
+ struct Node
+diff --git a/examples/cpp/server.cpp b/examples/cpp/server.cpp
+index 5f9ab22..6fe7f57 100644
+--- a/examples/cpp/server.cpp
++++ b/examples/cpp/server.cpp
+@@ -7,6 +7,12 @@
+ #include <string.h>
+ #include <string>
+ 
++#if defined(_WIN32)
++	#include <winsock.h>
++#else
++	#include <netinet/in.h>
++#endif
++
+ #include "ZeroTierSockets.h"
+ 
+ struct Node
+diff --git a/src/Events.cpp b/src/Events.cpp
+index 049f9ee..d134882 100644
+--- a/src/Events.cpp
++++ b/src/Events.cpp
+@@ -40,7 +40,6 @@
+ #define ROUTE_EVENT_TYPE(code) code >= ZTS_EVENT_ROUTE_ADDED && code <= ZTS_EVENT_ROUTE_REMOVED
+ #define ADDR_EVENT_TYPE(code) code >= ZTS_EVENT_ADDR_ADDED_IP4 && code <= ZTS_EVENT_ADDR_REMOVED_IP6
+ 
+-#include <execinfo.h>
+ #include <signal.h>
+ 
+ #ifdef ZTS_ENABLE_PYTHON

@@ -1,0 +1,10 @@
+^U:\SYNCHRONIZED\DEV\LIBZT-CONAN\TEST_PACKAGE\BUILD\ECBFB49A4E2EA8618319BE5F9E02C8E0621391FB\CMAKEFILES\101EEEC20797FA136329BBDB3B14E617\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SU:/SYNCHRONIZED/DEV/libzt-conan/test_package -BU:/SYNCHRONIZED/DEV/libzt-conan/test_package/build/ecbfb49a4e2ea8618319be5f9e02c8e0621391fb --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file U:/SYNCHRONIZED/DEV/libzt-conan/test_package/build/ecbfb49a4e2ea8618319be5f9e02c8e0621391fb/libzt-conan-test-package.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
