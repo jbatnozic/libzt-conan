@@ -25,6 +25,11 @@ me, I recommend that you use user `jbatnozic` and channel `stable`.
 
 For `profile`, use `default` or one of your own. 
 
+**Note:** If Conan can't resolve the dependency `libcurl`, you need to add the remote where it can be found:
+```
+conan remote add conan-center https://conan.bintray.com
+```
+
 ## Consuming the package
 Consumed through a conanfile (.txt or .py) like any other Conan package. Supports both `build-type`s (Debug and Release) as you'd excpect.
 
