@@ -33,3 +33,4 @@
 
 # Build artifact directories
 **/build/
+**/.vs/
