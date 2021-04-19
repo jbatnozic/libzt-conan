@@ -70,7 +70,7 @@ class LibztConan(ConanFile):
         else:
             if self.options.shared:
                 self.copy("lib/libzt.dylib", dst="lib", keep_path=False)
-                self.copy("*.so", dst="lib", keep_path=False)
+                self.copy("lib/libzt.so", dst="lib", keep_path=False)
             else:
                 self.copy("lib/libzt.a", dst="lib", keep_path=False)
 

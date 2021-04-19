@@ -3,7 +3,7 @@
 
 Latest version: `1.0.1`
 
-Currently tested only on Windows.
+Currently tested only on: MacOS, Ubuntu and Windows.
 
 # License
 MIT (see [LICENSE](https://github.com/jbatnozic/libzt-conan/blob/master/LICENSE)).
