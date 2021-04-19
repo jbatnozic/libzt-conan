@@ -1,7 +1,7 @@
 # Libzt-conan
 [Conan](https://conan.io/) recipe for [ZeroTier SDK](https://github.com/zerotier/libzt).
 
-Latest version: `1.0.1`
+Latest version: `1.1.0`
 
 Currently tested only on: MacOS, Ubuntu and Windows.
 

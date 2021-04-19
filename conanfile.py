@@ -3,7 +3,7 @@ import shutil
 
 class LibztConan(ConanFile):
     name = "libzt"
-    version = "1.0.1"
+    version = "1.1.0"
     
     # Information for humans
     license = "MIT"
