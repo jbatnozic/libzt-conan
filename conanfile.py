@@ -19,7 +19,7 @@ class LibztConan(ConanFile):
         # TODO Option to disable central API (and then not include CURL)
     }
     default_options = {
-        "shared": True,
+        "shared": False,
         "fPIC": True
     }
     generators = "cmake"
@@ -68,8 +68,11 @@ class LibztConan(ConanFile):
             else:
                 self.copy("lib/zt.lib", dst="lib", keep_path=False)
         else:
-            self.output.error(
-                "Automatic packaging currently not implemented on platforms other than Windows");
+            if self.options.shared:
+                self.copy("lib/libzt.dylib", dst="lib", keep_path=False)
+                self.copy("*.so", dst="lib", keep_path=False)
+            else:
+                self.copy("lib/libzt.a", dst="lib", keep_path=False)
 
     def package_info(self):
         if self.settings.os == "Windows":
@@ -95,6 +98,15 @@ class LibztConan(ConanFile):
                     "ZTS_ENABLE_CENTRAL_API",
                 ]
         else:
-            self.output.error(
-                "Automatic packaging currently not implemented on platforms other than Windows");
+            if self.options.shared:
+                self.cpp_info.libs = ["zt"]
+                self.cpp_info.defines = [
+                    "ZTS_ENABLE_CENTRAL_API",
+                ]
+            else:
+                self.cpp_info.libs = ["zt"]
+                self.cpp_info.defines = [
+                    "ZTS_STATIC",
+                    "ZTS_ENABLE_CENTRAL_API",
+                ]
 
