@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1023750..390195b 100644
+index e9edddb..9e3c1a9 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -62,6 +62,13 @@ if(BUILD_WIN)
- 	set(LWIP_PORT_DIR ${PROJ_DIR}/ext/lwip-contrib/ports/win32)
+@@ -19,6 +19,13 @@ elseif (USE_SANITIZER STREQUAL "Memory")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory")
  endif()
  
 +# -----------------------------------------------------------------------------
@@ -11,159 +11,85 @@ index 1023750..390195b 100644
 +# -----------------------------------------------------------------------------
 +
 +include(../conanbuildinfo.cmake)
-+conan_basic_setup()
++conan_basic_setup(TARGETS)
 +
- # -----------------------------------------------------------------------------
- # |                             INCLUDE DIRECTORIES                           |
- # -----------------------------------------------------------------------------
-@@ -141,7 +148,7 @@ if(BUILD_HOST)
- 	set(BUILD_SHARED_LIB        TRUE)
- 	set(BUILD_HOST_EXAMPLES     TRUE)
- 	set(ALLOW_INSTALL_TARGET    TRUE)
--	set(BUILD_HOST_SELFTEST    FALSE)
-+	# set(BUILD_HOST_SELFTEST    FALSE)
- 	set(ZTS_ENABLE_STATS        TRUE)
- 	set(ZTS_ENABLE_CENTRAL_API FALSE)
- endif()
-@@ -402,7 +409,7 @@ if(ZTS_ENABLE_CENTRAL_API)
- 	find_package(CURL)
- 	if(CURL_FOUND)
- 		include_directories(${CURL_INCLUDE_DIR})
--		set(requiredlibs ${requiredlibs} ${CURL_LIBRARIES})
-+		set(requiredlibs ${requiredlibs} ${CURL_LIBRARIES} ${CONAN_LIBS})
- 	else(CURL_FOUND)
- 		message(
- 			FATAL_ERROR "Could not find the CURL library and development files.")
-@@ -626,7 +633,7 @@ if(BUILD_STATIC_LIB)
- 			${shlwapi_LIBRARY_PATH} ${iphlpapi_LIBRARY_PATH})
- 	endif()
- 	if(ZTS_ENABLE_CENTRAL_API)
--		target_link_libraries(${STATIC_LIB_NAME} ${CURL_LIBRARIES})
-+		target_link_libraries(${STATIC_LIB_NAME} ${CURL_LIBRARIES} ${CONAN_LIBS})
- 	endif()
+ # ------------------------------------------------------------------------------
+ # |                             PLATFORM DETECTION                             |
+ # ------------------------------------------------------------------------------
+@@ -109,7 +116,7 @@ set(ALLOW_INSTALL_TARGET        TRUE)
+ set(BUILD_STATIC_LIB            TRUE)
+ set(BUILD_SHARED_LIB            TRUE)
+ set(BUILD_HOST_SELFTEST         TRUE)
+-set(ZTS_DISABLE_CENTRAL_API     TRUE)
++# set(ZTS_DISABLE_CENTRAL_API     TRUE)
+ 
+ # C# language bindings (libzt.dll/dylib/so)
+ if (ZTS_ENABLE_PINVOKE)
+@@ -294,12 +301,12 @@ if(BUILD_HOST_EXAMPLES)
+         ${PROJ_DIR}/examples/c/adhoc.c)
+     target_link_libraries(adhoc ${STATIC_LIB_NAME})
+ 
+-if(NOT ZTS_DISABLE_CENTRAL_API)
+-    add_executable(centralapi
+-        ${PROJ_DIR}/examples/c/centralapi.cpp)
+-    #target_compile_options(centralapi PRIVATE "-Wno-tautological-overlap-compare")
+-    target_link_libraries(centralapi ${STATIC_LIB_NAME})
+-endif()
++# if(NOT ZTS_DISABLE_CENTRAL_API)
++#     add_executable(centralapi
++#         ${PROJ_DIR}/examples/c/centralapi.cpp)
++#     #target_compile_options(centralapi PRIVATE "-Wno-tautological-overlap-compare")
++#     target_link_libraries(centralapi ${STATIC_LIB_NAME}")
++# endif()
+ 
+     add_executable(callbackapi
+         ${PROJ_DIR}/examples/c/callbackapi.c)
+@@ -431,7 +438,7 @@ if(NOT ZTS_DISABLE_CENTRAL_API)
+     find_package(CURL)
+     if(CURL_FOUND)
+         include_directories(${CURL_INCLUDE_DIR})
+-        set(requiredlibs ${requiredlibs} ${CURL_LIBRARIES})
++        set(requiredlibs ${requiredlibs} ${CURL_LIBRARIES} "CONAN_PKG::libcurl")
+     else(CURL_FOUND)
+         message(
+             FATAL_ERROR "Could not find the CURL library and development files.")
+@@ -648,7 +655,7 @@ if(BUILD_STATIC_LIB)
+             ${shlwapi_LIBRARY_PATH} ${iphlpapi_LIBRARY_PATH})
+     endif()
+     if(NOT ZTS_DISABLE_CENTRAL_API)
+-        target_link_libraries(${STATIC_LIB_NAME} ${CURL_LIBRARIES})
++        target_link_libraries(${STATIC_LIB_NAME} ${CURL_LIBRARIES} "CONAN_PKG::libcurl")
+     endif()
  endif() # BUILD_STATIC_LIB
  
-@@ -663,7 +670,7 @@ if(BUILD_SHARED_LIB)
- 		miniupnpc_pic)
- 
- 	if(ZTS_ENABLE_CENTRAL_API)
--		target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES})
-+		target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES} ${CONAN_LIBS})
- 	endif()
- 
- 	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-@@ -672,7 +679,7 @@ if(BUILD_SHARED_LIB)
- 		target_link_libraries(${DYNAMIC_LIB_NAME} android log)
- 	endif()
- 	if(ZTS_ENABLE_CENTRAL_API)
--		target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES})
-+		target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES} ${CONAN_LIBS})
- 	endif()
+@@ -685,7 +692,7 @@ if(BUILD_SHARED_LIB)
+         target_link_libraries(${DYNAMIC_LIB_NAME} android log)
+     endif()
+     if(NOT ZTS_DISABLE_CENTRAL_API)
+-        target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES})
++        target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES} "CONAN_PKG::libcurl")
+     endif()
  endif() # BUILD_SHARED_LIB
-
-diff --git a/examples/cpp/client.cpp b/examples/cpp/client.cpp
-index c05483b..d81c056 100644
---- a/examples/cpp/client.cpp
-+++ b/examples/cpp/client.cpp
-@@ -7,6 +7,12 @@
- #include <string.h>
- #include <string>
  
-+#if defined(_WIN32)
-+	#include <winsock.h>
-+#else
-+	#include <netinet/in.h>
-+#endif
-+
- #include "ZeroTierSockets.h"
- 
- struct Node
-diff --git a/examples/cpp/comprehensive.cpp b/examples/cpp/comprehensive.cpp
-index 385b101..ae5cf0c 100644
---- a/examples/cpp/comprehensive.cpp
-+++ b/examples/cpp/comprehensive.cpp
-@@ -90,11 +90,14 @@
- #include <stdlib.h>
- #include <string>
- 
-+#if defined(_WIN32)
-+	#include <winsock.h>
-+#else
-+	#include <netinet/in.h>
-+#endif
-+
- #include "ZeroTierSockets.h"
- 
--#ifdef __WINDOWS__
--#include "winsock.h"
--#endif
- struct Node
- {
- 	Node() : online(false), joinedAtLeastOneNetwork(false), id(0) {}
-diff --git a/examples/cpp/nonblockingclient.cpp b/examples/cpp/nonblockingclient.cpp
-index a5635da..f173f20 100644
---- a/examples/cpp/nonblockingclient.cpp
-+++ b/examples/cpp/nonblockingclient.cpp
-@@ -89,6 +89,12 @@
- #include <string.h>
- #include <string>
- 
-+#if defined(_WIN32)
-+	#include <winsock.h>
-+#else
-+	#include <netinet/in.h>
-+#endif
-+
- #include "ZeroTierSockets.h"
- 
- struct Node
-diff --git a/examples/cpp/nonblockingserver.cpp b/examples/cpp/nonblockingserver.cpp
-index e012922..f81f906 100644
---- a/examples/cpp/nonblockingserver.cpp
-+++ b/examples/cpp/nonblockingserver.cpp
-@@ -88,6 +88,12 @@
- #include <stdlib.h>
- #include <string.h>
- 
-+#if defined(_WIN32)
-+	#include <winsock.h>
-+#else
-+	#include <netinet/in.h>
-+#endif
-+
- #include "ZeroTierSockets.h"
- 
- struct Node
-diff --git a/examples/cpp/server.cpp b/examples/cpp/server.cpp
-index 5f9ab22..6fe7f57 100644
---- a/examples/cpp/server.cpp
-+++ b/examples/cpp/server.cpp
-@@ -7,6 +7,12 @@
- #include <string.h>
- #include <string>
- 
-+#if defined(_WIN32)
-+	#include <winsock.h>
-+#else
-+	#include <netinet/in.h>
-+#endif
-+
- #include "ZeroTierSockets.h"
- 
- struct Node
 diff --git a/include/ZeroTierSockets.h b/include/ZeroTierSockets.h
-index 68247e2..46d8521 100644
+index fe01d43..57d2825 100644
 --- a/include/ZeroTierSockets.h
 +++ b/include/ZeroTierSockets.h
-@@ -882,11 +882,15 @@ int zts_py_getblocking(int fd);
- //////////////////////////////////////////////////////////////////////////////
+@@ -197,7 +197,7 @@ typedef enum {
+ /**
+  * Error variable set after each `zts_*` socket call. Provides additional error context.
+  */
+-extern int zts_errno;
++// extern int zts_errno; // see line 1021
+ 
+ typedef enum {
+     /** Operation not permitted */
+@@ -1003,23 +1003,27 @@ typedef struct {
+ //----------------------------------------------------------------------------//
  
  #if defined(_WIN32)
--	#ifdef ADD_EXPORTS
--		#define ZTS_API __declspec(dllexport)
--	#else
--		#define ZTS_API __declspec(dllimport)
--	#endif
+-#ifdef ADD_EXPORTS
+-#define ZTS_API __declspec(dllexport)
 +    #ifndef ZTS_STATIC
 +        #ifdef ADD_EXPORTS
 +            #define ZTS_API __declspec(dllexport)
@@ -173,18 +99,26 @@ index 68247e2..46d8521 100644
 +    #else
 +        #define ZTS_API
 +    #endif
- 	#define ZTCALL __cdecl
++ 	#define ZTCALL __cdecl
  #else
- 	#define ZTS_API
-diff --git a/src/Events.cpp b/src/Events.cpp
-index 049f9ee..d134882 100644
---- a/src/Events.cpp
-+++ b/src/Events.cpp
-@@ -40,7 +40,6 @@
- #define ROUTE_EVENT_TYPE(code) code >= ZTS_EVENT_ROUTE_ADDED && code <= ZTS_EVENT_ROUTE_REMOVED
- #define ADDR_EVENT_TYPE(code) code >= ZTS_EVENT_ADDR_ADDED_IP4 && code <= ZTS_EVENT_ADDR_REMOVED_IP6
+-#define ZTS_API __declspec(dllimport)
+-#endif
+-#define ZTCALL __cdecl
+-#else
+-#define ZTS_API
+-#define ZTCALL
++    #define ZTS_API
++    #define ZTCALL
+ #endif
  
--#include <execinfo.h>
- #include <signal.h>
++extern ZTS_API int zts_errno;
++
+ //----------------------------------------------------------------------------//
+ // Central API                                                                //
+ //----------------------------------------------------------------------------//
  
- #ifdef ZTS_ENABLE_PYTHON
+-#define ZTS_DISABLE_CENTRAL_API 1
+-
+ #ifndef ZTS_DISABLE_CENTRAL_API
+ 
+ #define ZTS_CENTRAL_DEFAULT_URL         "https://my.zerotier.com"

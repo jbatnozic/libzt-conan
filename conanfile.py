@@ -3,7 +3,7 @@ import shutil
 
 class LibztConan(ConanFile):
     name = "libzt"
-    version = "1.1.0"
+    version = "2.0.0"
     
     # Information for humans
     license = "MIT"
@@ -15,16 +15,15 @@ class LibztConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {
         "shared": [True, False],
-        "fPIC": [True, False]
-        # TODO Option to disable central API (and then not include CURL)
+        "fPIC": [True, False],
+        "centralapi": [True, False],
     }
     default_options = {
         "shared": False,
-        "fPIC": True
+        "fPIC": True,
+        "centralapi": False,
     }
     generators = "cmake"
-    
-    requires = "libcurl/7.75.0"
     
     exports_sources = "patch.txt"
 
@@ -32,12 +31,16 @@ class LibztConan(ConanFile):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
+    def requirements(self):
+        if self.options.centralapi:
+            self.requires("libcurl/7.75.0")
+
     def source(self):
         self.output.info("Downloading source files from Git...")
         
         git = tools.Git(folder="libzt")
         git.clone("https://github.com/zerotier/libzt.git")
-        git.checkout("36256ea1b2a3251721a2b60e8165f59190e3f1a1")
+        git.checkout("8b30649edcd5b0d212c8c3315c90482516621fed")
         git.run("submodule init")
         git.run("submodule update")
         
@@ -47,7 +50,7 @@ class LibztConan(ConanFile):
         tools.patch(base_path="libzt", patch_file="patch.txt")
         
         cmake = CMake(self)
-        cmake.definitions["ZTS_ENABLE_CENTRAL_API"] = 1
+        cmake.definitions["ZTS_DISABLE_CENTRAL_API"] = 0 if self.options.centralapi else 1
         # Setting BUILD_HOST to 1 and BUILD_SHARED_LIBS to 0 is a horrible hack
         # but at least it results usable libraries (both static and shared). So
         # the only real difference is which ones are packaged.
@@ -63,8 +66,9 @@ class LibztConan(ConanFile):
         if self.settings.os == "Windows":
             if self.options.shared:
                 self.copy("lib/zt-shared.lib", dst="lib", keep_path=False)
+                self.copy("lib/zt-shared.dll", dst="bin", keep_path=False)
                 self.copy("bin/zt-shared.dll", dst="bin", keep_path=False)
-                self.copy("bin/zt-shared.pdb", dst="lib", keep_path=False)
+                self.copy("lib/zt-shared.pdb", dst="lib", keep_path=False)
             else:
                 self.copy("lib/zt.lib", dst="lib", keep_path=False)
         else:
@@ -83,9 +87,6 @@ class LibztConan(ConanFile):
                     "ShLwApi", # Windows shell API
                     "iphlpapi" # IP helper API
                 ]
-                self.cpp_info.defines = [
-                    "ZTS_ENABLE_CENTRAL_API",
-                ]
             else:
                 self.cpp_info.libs = ["zt"]
                 self.cpp_info.system_libs = [
@@ -93,20 +94,14 @@ class LibztConan(ConanFile):
                     "ShLwApi", # Windows shell API
                     "iphlpapi" # IP helper API
                 ]
-                self.cpp_info.defines = [
-                    "ZTS_STATIC",
-                    "ZTS_ENABLE_CENTRAL_API",
-                ]
         else:
-            if self.options.shared:
-                self.cpp_info.libs = ["zt"]
-                self.cpp_info.defines = [
-                    "ZTS_ENABLE_CENTRAL_API",
-                ]
-            else:
-                self.cpp_info.libs = ["zt"]
-                self.cpp_info.defines = [
-                    "ZTS_STATIC",
-                    "ZTS_ENABLE_CENTRAL_API",
-                ]
+            self.cpp_info.libs = ["zt"]
+            
+        if not self.options.shared:
+            self.cpp_info.defines.append("ZTS_STATIC")
+            
+        if not self.options.centralapi:
+            self.cpp_info.defines.append("ZTS_DISABLE_CENTRAL_API")
+        
+
 

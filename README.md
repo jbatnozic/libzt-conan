@@ -1,7 +1,7 @@
 # Libzt-conan
 [Conan](https://conan.io/) recipe for [ZeroTier SDK](https://github.com/zerotier/libzt).
 
-Latest version: `1.1.0`
+Latest version: `2.0.0`
 
 Currently tested only on: MacOS, Ubuntu and Windows.
 
@@ -33,8 +33,8 @@ conan remote add conan-center https://conan.bintray.com
 ## Consuming the package
 Consumed through a conanfile (.txt or .py) like any other Conan package. Supports both `build-type`s (Debug and Release) as you'd excpect.
 
-The only supported options are `fPIC` (except on Windows) and `shared`. Both are boolean (True/False). **Warning:** Due to a defect in the current libzt implementation,
-(not all symbols are exported properly) it's impossible to use the global variable `zts_errno` with shared=True on Windows.
+The only supported options are `fPIC` (except on Windows), `shared` and `centralapi` (controls whether ZeroTier Central API is
+enabled and included). All three are boolean (True/False). 
 
 # Also see
 [ZTCpp](https://github.com/jbatnozic/ztcpp), a user-friendly C++ wrapper over libzt. Also available as a Conan package.
