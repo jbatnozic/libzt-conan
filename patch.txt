@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e9edddb..9e3c1a9 100644
+index be00ded..71b1567 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -19,6 +19,13 @@ elseif (USE_SANITIZER STREQUAL "Memory")
@@ -16,35 +16,7 @@ index e9edddb..9e3c1a9 100644
  # ------------------------------------------------------------------------------
  # |                             PLATFORM DETECTION                             |
  # ------------------------------------------------------------------------------
-@@ -109,7 +116,7 @@ set(ALLOW_INSTALL_TARGET        TRUE)
- set(BUILD_STATIC_LIB            TRUE)
- set(BUILD_SHARED_LIB            TRUE)
- set(BUILD_HOST_SELFTEST         TRUE)
--set(ZTS_DISABLE_CENTRAL_API     TRUE)
-+# set(ZTS_DISABLE_CENTRAL_API     TRUE)
- 
- # C# language bindings (libzt.dll/dylib/so)
- if (ZTS_ENABLE_PINVOKE)
-@@ -294,12 +301,12 @@ if(BUILD_HOST_EXAMPLES)
-         ${PROJ_DIR}/examples/c/adhoc.c)
-     target_link_libraries(adhoc ${STATIC_LIB_NAME})
- 
--if(NOT ZTS_DISABLE_CENTRAL_API)
--    add_executable(centralapi
--        ${PROJ_DIR}/examples/c/centralapi.cpp)
--    #target_compile_options(centralapi PRIVATE "-Wno-tautological-overlap-compare")
--    target_link_libraries(centralapi ${STATIC_LIB_NAME})
--endif()
-+# if(NOT ZTS_DISABLE_CENTRAL_API)
-+#     add_executable(centralapi
-+#         ${PROJ_DIR}/examples/c/centralapi.cpp)
-+#     #target_compile_options(centralapi PRIVATE "-Wno-tautological-overlap-compare")
-+#     target_link_libraries(centralapi ${STATIC_LIB_NAME}")
-+# endif()
- 
-     add_executable(callbackapi
-         ${PROJ_DIR}/examples/c/callbackapi.c)
-@@ -431,7 +438,7 @@ if(NOT ZTS_DISABLE_CENTRAL_API)
+@@ -446,7 +453,7 @@ if(NOT ZTS_DISABLE_CENTRAL_API)
      find_package(CURL)
      if(CURL_FOUND)
          include_directories(${CURL_INCLUDE_DIR})
@@ -53,7 +25,7 @@ index e9edddb..9e3c1a9 100644
      else(CURL_FOUND)
          message(
              FATAL_ERROR "Could not find the CURL library and development files.")
-@@ -648,7 +655,7 @@ if(BUILD_STATIC_LIB)
+@@ -663,7 +670,7 @@ if(BUILD_STATIC_LIB)
              ${shlwapi_LIBRARY_PATH} ${iphlpapi_LIBRARY_PATH})
      endif()
      if(NOT ZTS_DISABLE_CENTRAL_API)
@@ -62,7 +34,7 @@ index e9edddb..9e3c1a9 100644
      endif()
  endif() # BUILD_STATIC_LIB
  
-@@ -685,7 +692,7 @@ if(BUILD_SHARED_LIB)
+@@ -700,7 +707,7 @@ if(BUILD_SHARED_LIB)
          target_link_libraries(${DYNAMIC_LIB_NAME} android log)
      endif()
      if(NOT ZTS_DISABLE_CENTRAL_API)
@@ -72,7 +44,7 @@ index e9edddb..9e3c1a9 100644
  endif() # BUILD_SHARED_LIB
  
 diff --git a/include/ZeroTierSockets.h b/include/ZeroTierSockets.h
-index fe01d43..57d2825 100644
+index 98058e9..e135554 100644
 --- a/include/ZeroTierSockets.h
 +++ b/include/ZeroTierSockets.h
 @@ -197,7 +197,7 @@ typedef enum {
@@ -84,7 +56,7 @@ index fe01d43..57d2825 100644
  
  typedef enum {
      /** Operation not permitted */
-@@ -1003,23 +1003,27 @@ typedef struct {
+@@ -1003,22 +1003,28 @@ typedef struct {
  //----------------------------------------------------------------------------//
  
  #if defined(_WIN32)
@@ -118,7 +90,7 @@ index fe01d43..57d2825 100644
  //----------------------------------------------------------------------------//
  
 -#define ZTS_DISABLE_CENTRAL_API 1
--
++// #define ZTS_DISABLE_CENTRAL_API 1
+ 
  #ifndef ZTS_DISABLE_CENTRAL_API
  
- #define ZTS_CENTRAL_DEFAULT_URL         "https://my.zerotier.com"

@@ -3,7 +3,7 @@ import shutil
 
 class LibztConan(ConanFile):
     name = "libzt"
-    version = "2.0.0"
+    version = "2.1.0"
     
     # Information for humans
     license = "MIT"
@@ -40,7 +40,7 @@ class LibztConan(ConanFile):
         
         git = tools.Git(folder="libzt")
         git.clone("https://github.com/zerotier/libzt.git")
-        git.checkout("8b30649edcd5b0d212c8c3315c90482516621fed")
+        git.checkout("41eb9aebc80a5f1c816fa26a06cefde9de906676")
         git.run("submodule init")
         git.run("submodule update")
         
