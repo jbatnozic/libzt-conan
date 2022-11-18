@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index be00ded..71b1567 100644
+index 7a95b8c..80a6954 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -19,6 +19,13 @@ elseif (USE_SANITIZER STREQUAL "Memory")
@@ -16,7 +16,7 @@ index be00ded..71b1567 100644
  # ------------------------------------------------------------------------------
  # |                             PLATFORM DETECTION                             |
  # ------------------------------------------------------------------------------
-@@ -446,7 +453,7 @@ if(NOT ZTS_DISABLE_CENTRAL_API)
+@@ -450,7 +457,7 @@ if(NOT ZTS_DISABLE_CENTRAL_API)
      find_package(CURL)
      if(CURL_FOUND)
          include_directories(${CURL_INCLUDE_DIR})
@@ -25,7 +25,7 @@ index be00ded..71b1567 100644
      else(CURL_FOUND)
          message(
              FATAL_ERROR "Could not find the CURL library and development files.")
-@@ -663,7 +670,7 @@ if(BUILD_STATIC_LIB)
+@@ -671,7 +678,7 @@ if(BUILD_STATIC_LIB)
              ${shlwapi_LIBRARY_PATH} ${iphlpapi_LIBRARY_PATH})
      endif()
      if(NOT ZTS_DISABLE_CENTRAL_API)
@@ -34,8 +34,8 @@ index be00ded..71b1567 100644
      endif()
  endif() # BUILD_STATIC_LIB
  
-@@ -700,7 +707,7 @@ if(BUILD_SHARED_LIB)
-         target_link_libraries(${DYNAMIC_LIB_NAME} android log)
+@@ -711,7 +718,7 @@ if(BUILD_SHARED_LIB)
+         endif()
      endif()
      if(NOT ZTS_DISABLE_CENTRAL_API)
 -        target_link_libraries(${DYNAMIC_LIB_NAME} ${CURL_LIBRARIES})
@@ -44,7 +44,7 @@ index be00ded..71b1567 100644
  endif() # BUILD_SHARED_LIB
  
 diff --git a/include/ZeroTierSockets.h b/include/ZeroTierSockets.h
-index 98058e9..e135554 100644
+index 98058e9..7fc4b62 100644
 --- a/include/ZeroTierSockets.h
 +++ b/include/ZeroTierSockets.h
 @@ -197,7 +197,7 @@ typedef enum {
@@ -79,8 +79,8 @@ index 98058e9..e135554 100644
 -#else
 -#define ZTS_API
 -#define ZTCALL
-+    #define ZTS_API
-+    #define ZTCALL
++	#define ZTS_API
++	#define ZTCALL
  #endif
  
 +extern ZTS_API int zts_errno;
