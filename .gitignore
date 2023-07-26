@@ -34,3 +34,6 @@
 # Build artifact directories
 **/build/
 **/.vs/
+
+# Misc
+**/CMakeUserPresets.json
