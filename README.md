@@ -1,7 +1,7 @@
 # Libzt-conan
 [Conan](https://conan.io/) recipe for [ZeroTier SDK](https://github.com/zerotier/libzt).
 
-Latest version: `3.0.0`
+Latest version: `3.0.1`
 
 **Note:** The recipe in folder Conan1.x is for use with conan versions older than 2.0.0 and this recipe has version 2.2.0.
 It is no longer supported and will not be updated.
@@ -21,18 +21,21 @@ To do that, first download the repository. Then, if you are using a conan versio
 and if you're using conan version 2.0.0 or newer, `cd` into `Conan2.x`. Finally, run the following command from your terminal:
 
 ```
-conan create . @<user>/<channel> --profile=<profile> --build=outdated 
+# Conan 1.x way:
+conan create . @<user>/<channel> --profile=<profile> --build=outdated
+
+# Conan 2.x way:
+conan create . --profile=<profile> --user=<user> --channel=<channel> --build=missing
 ```
 
 You can choose the `user` and `channel` arbitrarily, however, for compatibility with other Conan packages created by 
-me, I recommend that you use user `jbatnozic` and channel `stable`. (With conan 2.0 you cannot and should not specify 
-the user nor the channel.)
+me, I recommend that you use user `jbatnozic` and channel `stable`.
 
 For `profile`, use `default` or one of your own. 
 
 **Note:** If Conan can't resolve the dependency `libcurl` (only needed if using the Central API), you need to add the remote where it can be found:
 ```
-conan remote add conan-center https://conan.bintray.com
+conan remote add conancenter https://center.conan.io
 ```
 
 ## Consuming the package
