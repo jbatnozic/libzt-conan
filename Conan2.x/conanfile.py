@@ -6,10 +6,10 @@ from conan.tools.scm import Git
 
 class libztRecipe(ConanFile):
     name = "libzt"
-    version = "3.0.0"
+    version = "3.0.1"
     package_type = "library"
 
-    # Optional metadata
+    # Metadata
     license = "MIT"
     author = "Jovan Batnožić (jovanbatnozic@hotmail.rs)"
     url = "https://github.com/jbatnozic/libzt-conan"
@@ -42,9 +42,6 @@ class libztRecipe(ConanFile):
     def requirements(self):
         if self.options.centralapi:
             self.requires("libcurl/8.1.2")
-
-    # def layout(self):
-    #     cmake_layout(self)
 
     def source(self):
         self.output.info("Downloading source files from Git...")
@@ -84,6 +81,9 @@ class libztRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
+        self.cpp_info.libdirs = ['lib']
+        self.cpp_info.bindirs = ['bin']
+
         if self.settings.os == "Windows":
             if self.options.shared:
                 self.cpp_info.libs = ["zt-shared"]
