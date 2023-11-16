@@ -6,7 +6,7 @@ from conan.tools.scm import Git
 
 class libztRecipe(ConanFile):
     name = "libzt"
-    version = "3.0.1"
+    version = "3.0.2"
     package_type = "library"
 
     # Metadata
@@ -49,7 +49,7 @@ class libztRecipe(ConanFile):
         git = Git(self)
         git.clone(url="https://github.com/zerotier/libzt.git", target="libzt")
         git.folder = "libzt"
-        git.checkout(commit="8d21a265cc23dd6e6e4d2c2ad068e978f110f8e3")
+        git.checkout(commit="2f0f25a15870ac0ae52815558c539e63d656d506")
         git.run("submodule init")
         git.run("submodule update")
         
