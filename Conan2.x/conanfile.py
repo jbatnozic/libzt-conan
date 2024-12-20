@@ -6,7 +6,7 @@ from conan.tools.scm import Git
 
 class libztRecipe(ConanFile):
     name = "libzt"
-    version = "3.0.2"
+    version = "3.0.3"
     package_type = "library"
 
     # Metadata

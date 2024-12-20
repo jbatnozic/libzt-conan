@@ -1,7 +1,7 @@
 # Libzt-conan
 [Conan](https://conan.io/) recipe for [ZeroTier SDK](https://github.com/zerotier/libzt).
 
-Latest version: `3.0.1`
+Latest version: `3.0.3`
 
 **Note:** The recipe in folder Conan1.x is for use with conan versions older than 2.0.0 and this recipe has version 2.2.0.
 It is no longer supported and will not be updated.
