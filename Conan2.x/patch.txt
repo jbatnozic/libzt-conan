@@ -1,7 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 24b1d79..0758804 100644
+index 24b1d79..3bd39b6 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.0)
++cmake_minimum_required(VERSION 3.0...4.4)
+ project(zt)
+ find_package(Threads)
+ 
 @@ -89,6 +89,7 @@ include_directories(${ZTO_SRC_DIR}/node)
  include_directories(${ZTO_SRC_DIR}/osdep)
  # ZeroTier (ext)
